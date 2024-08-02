@@ -20,6 +20,10 @@ body {
   margin: auto;
 }
 
+.btn {
+  margin: 5px;
+}
+
 .ol-popup {
   position: absolute;
   background-color: white;

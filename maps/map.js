@@ -1,4 +1,3 @@
-import { useEffect, useRef } from "react";
 import monotoneChainConvexHull from "monotone-chain-convex-hull";
 import { _createCircle, _createMousePosition } from "./help";
 import { Map, View } from "ol";
@@ -8,11 +7,11 @@ import Feature from "ol/Feature";
 import Point from "ol/geom/Point";
 import { Icon, Style, Circle as CircleStyle, Fill, Stroke, Text } from "ol/style";
 import { Vector as VectorLayer, Tile as TileLayer } from "ol/layer";
-import { createStringXY, toStringHDMS } from "ol/coordinate";
+import { toStringHDMS } from "ol/coordinate";
 import { defaults as defaultControls } from "ol/control";
 import WebGLPointsLayer from "ol/layer/WebGLPoints";
 import Overlay from "ol/Overlay";
-import { Circle, LineString, Polygon } from "ol/geom";
+import { LineString, Polygon } from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
 import { createEmpty, extend, getHeight, getWidth } from "ol/extent";
 
@@ -364,7 +363,10 @@ const mapInit = () => {
       // }),
 
       new TileLayer({
-        source: new XYZ({ url: "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}", crossOrigin: "anonymous" }),
+        source: new XYZ({
+          url: "https://mt0.google.com/vt/lyrs=m&hl=en&x={x}&y={y}&z={z}",
+          crossOrigin: "anonymous",
+        }),
       }),
 
       new VectorLayer({
@@ -396,7 +398,7 @@ const mapInit = () => {
       }),
 
       // Cluster
-      clusterHulls, // line scope
+      clusterHulls, // Line scope
       clusters,
       clusterCircles,
 
@@ -413,6 +415,7 @@ const mapInit = () => {
     view: new View({
       center: [0, 0], // --> Default
       zoom: 2,
+      maxZoom: 21,
     }),
   });
 
@@ -620,14 +623,13 @@ const mapInit = () => {
       }
     });
 
-    // ===================== Display popup on click =====================
+    // ===================== Display Popup when Click =====================
     const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
       return feature;
     });
     disposePopover();
-    if (!feature) {
-      return;
-    }
+    if (!feature) return;
+
     popupIcon.setPosition(event.coordinate);
     popoverIcon = new bootstrap.Popover(elementPopupIcon, {
       placement: "top",
@@ -640,24 +642,24 @@ const mapInit = () => {
     displayFeatureInfo(event.pixel, event.originalEvent.target);
   });
 
-  map.on("singleclick", function (evt) {
-    // =========================== Render the Popup =========================
+  map.on("singleclick", function (event) {
+    // =========================== Popup Localtion =========================
     if (!CLICK_SHOW_POPUP) return;
-    const coordinate = evt.coordinate;
+    const coordinate = event.coordinate;
     const hdms = toStringHDMS(toLonLat(coordinate));
     content.innerHTML = `
-    <p style="font-weight: 700">
-      Click Location:
-    </p>
-    <code> ${hdms}</code>
-    <code> Latitude: ${JSON.stringify(coordinate[0])}</code>
-    <code> Longitude: ${JSON.stringify(coordinate[1])}</code>
-  `;
+      <p style="font-weight: 700">
+        Click Location:
+      </p>
+      <code> ${hdms}</code>
+      <code> Latitude: ${JSON.stringify(coordinate[0])}</code>
+      <code> Longitude: ${JSON.stringify(coordinate[1])}</code>
+    `;
     overlay.setPosition(coordinate);
   });
 
   map.getTargetElement().addEventListener("pointerleave", function () {
-    //tooltip.hide();
+    tooltip.hide();
     currentFeature = undefined;
   });
   // #endregion
@@ -665,6 +667,4 @@ const mapInit = () => {
   return map;
 };
 
-export {
-  mapInit, //
-};
+export { mapInit };

@@ -4,7 +4,7 @@ import { fromLonLat, toLonLat } from "ol/proj";
 const SCALE_UNIT = 1;
 const SCALE_DETAIL = 16; // Level scale detail
 const DEBUG_MODE = false;
-const CLICK_SHOW_POPUP = true;
+const CLICK_SHOW_POPUP = false;
 const MAP_TILER_KEY = "17YhaUehJVmGcqQaZ2up"; // "https://api.maptiler.com/maps/basic-v2/?key=17YhaUehJVmGcqQaZ2up#1.0/0.00000/0.00000";
 
 const MARRIOT_LOC = fromLonLat([105.783089061, 21.007448175]);
