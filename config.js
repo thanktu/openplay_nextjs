@@ -14,6 +14,8 @@ const LOTTE_LOC = fromLonLat([105.813080887, 21.076551416]);
 const FILTER_LOC = fromLonLat([105.735447973, 21.057766731]); // Area Show Data to Filter
 const CLUSTER_LOC = fromLonLat([16.340115111, 48.232346294]);
 
+const ROAD_MAP_LOC = fromLonLat([126.980366, 37.52654]);
+
 export {
   SCALE_UNIT,
   SCALE_DETAIL,
@@ -28,4 +30,5 @@ export {
   LOTTE_LOC,
   FILTER_LOC,
   CLUSTER_LOC,
+  ROAD_MAP_LOC,
 };

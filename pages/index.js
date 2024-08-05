@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
-
+import Head from "next/head";
 import { _createCircle, _createMousePosition } from "../maps/help";
-
 import { mapInit } from "../maps/map";
 
 const MapComponent = () => {
@@ -72,6 +71,10 @@ const MapComponent = () => {
 
   return (
     <>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Maps</title>
+      </Head>
       <div>
         <div style={{ width: "calc(100% - 300px)", float: "right" }}>
           <div id="map" className="map" ref={mapRef}>
@@ -138,14 +141,14 @@ const MapComponent = () => {
               </button>
             </div>
             {/* With Label */}
-            {/* <div class="cls">
+            <div class="cls">
               <hr />
-              <span class="head">Label: Show data with label info </span>
-              <button type="button" class="btn btn-success btn-sm btn-block" id="goLabel">
-                Label Area
+              <span class="head">ROAD Map </span>
+              <button type="button" class="btn btn-success btn-sm btn-block" id="goRoadMap">
+                RoadMap Area
               </button>
               <div class="cls"></div>
-            </div> */}
+            </div>
 
             {/* Info */}
             <div className="cls">

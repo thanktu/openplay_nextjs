@@ -14,6 +14,7 @@ import Overlay from "ol/Overlay";
 import { LineString, Polygon } from "ol/geom";
 import GeoJSON from "ol/format/GeoJSON";
 import { createEmpty, extend, getHeight, getWidth } from "ol/extent";
+import * as turf from "@turf/turf";
 
 import {
   SCALE_UNIT,
@@ -26,6 +27,7 @@ import {
   LOTTE_LOC,
   FILTER_LOC,
   CLUSTER_LOC,
+  ROAD_MAP_LOC,
 } from "../config";
 
 const mapInit = () => {
@@ -348,6 +350,44 @@ const mapInit = () => {
   });
   // #endregion
 
+  // #region RoadMap
+
+  const sourceRoad = new VectorSource();
+  fetch("https://raw.githubusercontent.com/thanktu/thanktu.github.io/main/data/roads-seoul.geojson")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (json) {
+      const formatRoad = new GeoJSON();
+      const featuresRoad = formatRoad.readFeatures(json);
+      const streetRoad = featuresRoad[0];
+
+      // convert to a turf.js feature
+      const turfLine = formatRoad.writeFeatureObject(streetRoad);
+
+      // show a marker every 200 meters
+      const distance = 0.2;
+
+      // get the line length in kilometers
+      // const length = turf.lineDistance(turfLine, "kilometers");
+      const length = turf.lineDistance(turfLine, "kilometers");
+
+      //
+      for (let i = 1; i <= length / distance; i++) {
+        const turfPoint = turf.along(turfLine, i * distance, "kilometers");
+
+        // convert the generated point to a OpenLayers feature
+        const marker = formatRoad.readFeature(turfPoint);
+        marker.getGeometry().transform("EPSG:4326", "EPSG:3857");
+        sourceRoad.addFeature(marker);
+      }
+
+      streetRoad.getGeometry().transform("EPSG:4326", "EPSG:3857");
+      sourceRoad.addFeature(streetRoad);
+    });
+
+  // #endregion
+
   // ================================== MAP  ==================================
   const map = new Map({
     target: "map",
@@ -355,7 +395,6 @@ const mapInit = () => {
     overlays: [overlay],
     layers: [
       // type layer: image -> use default from OpenStreetMap
-
       // new TileLayer({
       //   source: new OSM(),
       //   visible: true,
@@ -402,6 +441,11 @@ const mapInit = () => {
       clusters,
       clusterCircles,
 
+      // Road Line
+      new VectorLayer({
+        source: sourceRoad,
+      }),
+
       // Layer Debug
       ...(DEBUG_MODE
         ? [
@@ -415,7 +459,7 @@ const mapInit = () => {
     view: new View({
       center: [0, 0], // --> Default
       zoom: 2,
-      maxZoom: 21,
+      // maxZoom: 21,
     }),
   });
 
@@ -504,6 +548,7 @@ const mapInit = () => {
   onClick("goToIcon", () => flyTo(ICON_LOC, SCALE_DETAIL, function () {}));
   onClick("goToFilterArea", () => flyTo(FILTER_LOC, 2, function () {}));
   onClick("goToCluster", () => flyTo(CLUSTER_LOC, 11, function () {}));
+  onClick("goRoadMap", () => flyTo(ROAD_MAP_LOC, 16, function () {}));
 
   onClick("goToMulty", () => {
     const view = map.getView();
@@ -624,19 +669,19 @@ const mapInit = () => {
     });
 
     // ===================== Display Popup when Click =====================
-    const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
-      return feature;
-    });
-    disposePopover();
-    if (!feature) return;
+    // const feature = map.forEachFeatureAtPixel(event.pixel, function (feature) {
+    //   return feature;
+    // });
+    // disposePopover();
+    // if (!feature) return;
 
-    popupIcon.setPosition(event.coordinate);
-    popoverIcon = new bootstrap.Popover(elementPopupIcon, {
-      placement: "top",
-      html: true,
-      content: feature.get("name"),
-    });
-    popoverIcon.show();
+    // popupIcon.setPosition(event.coordinate);
+    // popoverIcon = new bootstrap.Popover(elementPopupIcon, {
+    //   placement: "top",
+    //   html: true,
+    //   content: feature.get("name"),
+    // });
+    // popoverIcon.show();
 
     // ========================== xxxxxx ==========================
     displayFeatureInfo(event.pixel, event.originalEvent.target);
